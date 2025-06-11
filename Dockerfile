@@ -41,26 +41,8 @@ RUN npm run build
 # Return to app directory
 WORKDIR /app
 
-# Create start script
-RUN printf '#!/bin/bash\n\
-echo "Waiting for database..."\n\
-while ! nc -z db 5432; do\n\
-  sleep 1\n\
-done\n\
-echo "Database is ready!"\n\
-\n\
-echo "Starting backend..."\n\
-cd /app/backend\n\
-PYTHONPATH=/app/backend python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &\n\
-\n\
-echo "Starting frontend..."\n\
-cd /app/frontend\n\
-npm start &\n\
-\n\
-wait' > /app/start.sh && chmod +x /app/start.sh
-
 # Expose ports
 EXPOSE 8000 3000
 
 # Start the application
-CMD ["/bin/bash", "/app/start.sh"]
+CMD /bin/bash -c "while ! nc -z db 5432; do sleep 1; done; echo 'Database is ready!' && cd /app/backend && PYTHONPATH=/app/backend python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload & cd /app/frontend && npm start & wait"
