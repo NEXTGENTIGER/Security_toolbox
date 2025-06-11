@@ -35,7 +35,7 @@ COPY frontend/ /app/frontend/
 # Install frontend dependencies and build
 WORKDIR /app/frontend
 RUN npm install
-RUN npm install react-scripts@5.0.1
+RUN npm install react-scripts@5.0.1 --save
 RUN npm run build
 
 # Return to app directory
@@ -45,4 +45,4 @@ WORKDIR /app
 EXPOSE 8000 3000
 
 # Start the application
-CMD /bin/bash -c "while ! nc -z db 5432; do sleep 1; done; echo 'Database is ready!' && cd /app/backend && PYTHONPATH=/app/backend python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload & cd /app/frontend && npm start & wait"
+CMD /bin/bash -c "while ! nc -z db 5432; do sleep 1; done; echo 'Database is ready!' && cd /app/backend && PYTHONPATH=/app/backend python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload & cd /app/frontend && npm install && npm start & wait"
