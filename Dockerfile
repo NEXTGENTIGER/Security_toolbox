@@ -39,12 +39,31 @@ RUN npm run build
 # Return to app directory
 WORKDIR /app
 
-# Copy start script and make it executable
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+# Create start script
+RUN echo '#!/bin/bash\n\
+\n\
+# Wait for database to be ready\n\
+echo "Waiting for database to be ready..."\n\
+while ! nc -z db 5432; do\n\
+  sleep 1\n\
+done\n\
+echo "Database is ready!"\n\
+\n\
+# Start FastAPI backend\n\
+echo "Starting FastAPI backend..."\n\
+cd /app\n\
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &\n\
+\n\
+# Start React frontend\n\
+echo "Starting React frontend..."\n\
+cd /app/frontend\n\
+npm start &\n\
+\n\
+# Keep container running\n\
+wait' > /app/start.sh && chmod +x /app/start.sh
 
 # Expose ports
 EXPOSE 8000 3000
 
 # Start the application
-CMD ["/app/start.sh"] 
+CMD ["/app/start.sh"]
