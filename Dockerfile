@@ -26,8 +26,8 @@ WORKDIR /app
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend app directory
-COPY backend/app /app/app/
+# Copy backend files
+COPY backend/ /app/backend/
 
 # Copy frontend files
 COPY frontend/ /app/frontend/
@@ -50,7 +50,7 @@ done\n\
 echo "Database is ready!"\n\
 \n\
 echo "Starting backend..."\n\
-cd /app\n\
+cd /app/backend\n\
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &\n\
 \n\
 echo "Starting frontend..."\n\
